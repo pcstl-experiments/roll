@@ -9,7 +9,8 @@ module Syntax
     termToTermList,
     termToStringList,
     trueTerm,
-    falseTerm
+    falseTerm,
+    termLength
   ) where
 
 data Term = Nil
@@ -56,6 +57,11 @@ boolToTerm :: Bool -> Term
 boolToTerm True  = trueTerm
 boolToTerm False = falseTerm
 
+termLength :: Term -> Maybe Int
+termLength t = termLength' t 0
+  where termLength' (Pair _ rest) acc = termLength' rest (acc+1)
+        termLength' Nil           acc = Just acc
+        termLength' _             _   = Nothing
 
 -- functions from here on are mostly used for testing and should probably be
 -- less trusted than the rest here. E.g.: They mostly only work on proper lists.

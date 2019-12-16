@@ -2,15 +2,29 @@ module Syntax
   ( Term(..),
     printTerm,
     showTerm,
-    isProperList
+    isAtom,
+    isProperList,
+    boolToTerm,
+    listToTerm,
+    termToTermList,
+    termToStringList,
+    trueTerm,
+    falseTerm
   ) where
 
 data Term = Nil
           | Atom String
           | Pair Term Term
+          deriving (Eq, Show)
+
+trueTerm  = Atom "t"
+falseTerm = Nil
 
 printTerm :: Term -> IO ()
 printTerm = putStrLn . showTerm
+
+parenthesize :: String -> String
+parenthesize s = "(" ++ s ++ ")"
 
 showTerm :: Term -> String
 showTerm Nil          = "()"
@@ -29,10 +43,32 @@ showPair t = parenthesize $ showPair' t
         showPair' _                    =
           error "Roll.showPair: Attempt to display non-cons-cell as cons cell"
 
+isAtom :: Term -> Bool
+isAtom (Atom _) = True
+isAtom _        = False
+
 isProperList :: Term -> Bool
 isProperList (Pair h Nil) = True
 isProperList (Pair h t)   = isProperList t
 isProperList _            = False
 
-parenthesize :: String -> String
-parenthesize s = "(" ++ s ++ ")"
+boolToTerm :: Bool -> Term
+boolToTerm True  = trueTerm
+boolToTerm False = falseTerm
+
+
+-- functions from here on are mostly used for testing and should probably be
+-- less trusted than the rest here. E.g.: They mostly only work on proper lists.
+listToTerm :: [String] -> Term
+listToTerm = foldr Pair Nil . (map Atom)
+
+termToTermList :: Term -> Maybe [Term]
+termToTermList l = reverse <$> termToList' l []
+  where termToList' Nil        acc = Just acc
+        termToList' (Pair h t) acc = termToList' t (h:acc)
+        termToList' _          _   = Nothing
+
+termToStringList :: Term -> Maybe [String]
+termToStringList t = termToTermList t >>= (sequence . (map toStringIfAtom))
+  where toStringIfAtom (Atom s) = Just s
+        toStringIfAtom _        = Nothing

@@ -11,7 +11,7 @@ module Builtins
   ) where
 
 import qualified Syntax
-import qualified Data.Map as Map
+import qualified Data.Map.Strict as Map
 import Control.Monad (join)
 
 type Result = Either String Syntax.Term

@@ -46,3 +46,6 @@ tests:
     - -with-rtsopts=-N
     dependencies:
     - roll
+    - tasty
+    - tasty-hunit
+    - tasty-quickcheck

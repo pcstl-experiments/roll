@@ -73,18 +73,18 @@ callBuiltin table name args =
           let arg1    = head args
               arg2    = head argrest
               argrest = tail args
-          in [ ("quote", pure $ quote arg1)
-             , ("atom",  pure $ atom  arg1)
-             , ("eq",    pure $ eq    arg1 arg2)
-             , ("car",          car   arg1)
-             , ("cdr",          cdr   arg2)
-             , ("cons",         cons  arg1 arg2)
+          in [ ("quote", pure $ quote arg1      )
+             , ("atom",  pure $ atom  arg1      )
+             , ("eq",    pure $ eq    arg1 arg2 )
+             , ("car",          car   arg1      )
+             , ("cdr",          cdr   arg2      )
+             , ("cons",         cons  arg1 arg2 )
              , ("cond",         cond  table args)
              ]
 
 cond :: SymbolTable -> [Syntax.Term] -> Result
 cond _ [] = pure Syntax.Nil
-cond table (term@(Syntax.Pair condition (Syntax.Pair cmd Syntax.Nil)):rest) = do
+cond table ((Syntax.Pair condition (Syntax.Pair cmd Syntax.Nil)):rest) = do
     evalThis <- evalTerm table condition
     if evalThis == Syntax.trueTerm
       then evalTerm table cmd
